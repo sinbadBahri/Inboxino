@@ -2,18 +2,11 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\TestController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-//Route::get('/', function () {
-//    return Inertia::render('Welcome', [
-//        'canLogin' => Route::has('login'),
-//        'canRegister' => Route::has('register'),
-//        'laravelVersion' => Application::VERSION,
-//        'phpVersion' => PHP_VERSION,
-//    ]);
-//});
 Route::get('/', [MainController::class, 'index']);
 Route::post('/send-message', [MainController::class, 'sendMessage']);
 

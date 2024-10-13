@@ -1,19 +1,54 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
-import {Head} from "@inertiajs/vue3";
+import Toast from '../Support/Toast.vue';
+import { Head } from "@inertiajs/vue3"; // Adjust the path as necessary
 
 const message = ref('');
+const toasts = ref([]); // Array to hold multiple toast messages
+
+const MAX_TOASTS = 6; // Maximum number of toasts to display
+const TOAST_DURATION = 300000; // Duration in milliseconds (5 minutes)
 
 function sendMessage() {
     axios.post('/send-message', { message: message.value })
         .then(response => {
-            console.log('Message sent successfully:', response.data);
-            message.value = '';
+            if (response.status === 200) {
+                // Add a success toast
+                addToast({
+                    id: Date.now(), // Unique ID for the toast
+                    message: 'Message sent successfully!',
+                    type: 'success',
+                });
+                message.value = ''; // Clear the input after sending
+            }
         })
         .catch(error => {
-            console.error('Error sending message:', error.response.data);
+            console.error('Error sending message:', error);
+            // Add an error toast
+            addToast({
+                id: Date.now(), // Unique ID for the toast
+                message: 'Failed to send message.',
+                type: 'error',
+            });
         });
+}
+
+
+// Function to add a toast to the list
+function addToast(toast) {
+    if (toasts.value.length < MAX_TOASTS) {
+        toasts.value.push(toast);
+        // Automatically close the toast after the specified duration
+        setTimeout(() => {
+            removeToast(toast.id);
+        }, TOAST_DURATION);
+    }
+}
+
+// Function to remove a toast by its ID
+function removeToast(id) {
+    toasts.value = toasts.value.filter(toast => toast.id !== id);
 }
 </script>
 
@@ -36,12 +71,12 @@ function sendMessage() {
 
                 <!-- Message input -->
                 <div class="form-outline mb-4">
-          <textarea
-              class="form-control"
-              id="message"
-              v-model="message"
-              rows="4"
-          ></textarea>
+                    <textarea
+                        class="form-control"
+                        id="message"
+                        v-model="message"
+                        rows="4"
+                    ></textarea>
                     <label class="form-label" for="message">متن پیام</label>
                 </div>
 
@@ -54,10 +89,21 @@ function sendMessage() {
                     ارسال پیام
                 </button>
             </form>
+
+            <!-- Toast Notifications -->
+            <div class="toast-container">
+                <Toast
+                    v-for="toast in toasts"
+                    :key="toast.id"
+                    :message="toast.message"
+                    :type="toast.type"
+                    @close="removeToast(toast.id)"
+                />
+            </div>
         </div>
     </div>
-
 </template>
+
 <style scoped>
 html,
 body {
@@ -87,8 +133,20 @@ body {
 .whatsapp-logo {
     width: 100px;
     height: 100px;
-    margin-left: 3.5rem;
-    margin-right: 3.5rem;
+    margin-left: 3rem;
     margin-bottom: 1.5rem;
+}
+
+/* Styling for the toast container */
+.toast-container {
+    position: fixed;
+    bottom: 0;
+    end: 0;
+    padding: 1rem;
+    z-index: 11;
+    display: flex;
+    flex-direction: column; /* Stack toasts vertically */
+    gap: 1rem; /* Space between toasts */
+    margin-left: 40rem;
 }
 </style>

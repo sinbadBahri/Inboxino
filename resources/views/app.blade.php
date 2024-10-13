@@ -15,6 +15,9 @@
 
         <!-- Bootstrap CSS (optional, since MDB UI Kit includes Bootstrap) -->
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet" />
+        <!-- Bootstrap JS -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+
     </head>
 
         <!-- Scripts -->
